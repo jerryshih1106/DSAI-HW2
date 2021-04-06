@@ -12,12 +12,7 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 def readCSV(x):
     train = pd.read_csv(x,header=None)
-    # print(len(train[0]))
-    # for i in range(len(train[0])):
-    #     values = {0:train[i][1],1:train[i][0],3:train[i][4],4:train[i][3]}
-    #     train = train.fillna(value = values)
-    
-
+    #去掉nan的值
     train = train.fillna(144)
     return train
 def normalize(train):
@@ -28,13 +23,7 @@ def denormalize(train):
     return denorm
 def buildManyToManyModel(shape):
     
-    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    # The same LSTM model I would like to test, lets see if the sinus prediction results can be matched
-# Note: replace LSTM with GRU or RNN if you want to try those
-
     model = Sequential()
-    # model.add(GRU(50, activation='tanh',return_sequences=True,input_length=shape[1], input_dim=shape[2]))
-    # model.add(Dropout(0.15))
     model.add(GRU(70,return_sequences=True,input_length=shape[1], input_dim=shape[2]))
     model.add(Dropout(0.1))
     model.add(GRU(100,return_sequences=False))
@@ -45,16 +34,6 @@ def buildManyToManyModel(shape):
     print ('model compiled')
 
     return model
-# def buildTrainX(train, past=500, future=250):
-#     X_train = []
-#     for i in range(train.shape[0]-future-past):
-#         X_train.append(np.array(train.iloc[i:i+past]))
-#     return np.array(X_train)
-# def buildTrainY(train, pastDay=200, futureDay=60):
-#     Y_train = []
-#     for i in range(train.shape[0]-futureDay-pastDay+1):
-#         Y_train.append(np.array(train.iloc[i+pastDay:i+pastDay+futureDay]))
-#     return np.array(Y_train)
 
 def buildTrain(train, past=30, future=20):
      X_train, Y_train = [], []
@@ -91,10 +70,8 @@ train_norm = normalize(train)
 
 X_train, Y_train = buildTrain(train_norm,30,20)
 
-# X_train = buildTrain(train_norm, 250,250)
-# Y_train = buildTrain(Ytrain_norm, 250,250)
 X_train, Y_train = shuffle(X_train, Y_train)
-# X_train, Y_train = JbuildTrain(train_norm,60,8)
+
 
 X_train, Y_train, X_val, Y_val = splitData(X_train, Y_train, 0.1)
 
@@ -124,30 +101,16 @@ if __name__ == '__main__':
     # datatest = pd.read_csv(args.training)
     model = load_model('my_model.h5')
 
-    # Ydatatest = readTrain(x='2021Y.csv')
-    # Ydatatest = pd.read_csv('J2021Y.csv')
-    # datatest = pd.read_csv("testing.csv",header=None)
     datatest = readCSV(x = "testing.csv")
     # datatest_Aug = augFeatures(datatest)
     datatest_norm = normalize(datatest)
 #原始測試資料集
-    # Ydatatest_Aug = augFeatures(Ydatatest)
-    # x_test, y_test = buildTest(datatest_Aug)
     X_test = buildTestX(datatest_norm)
-#規一化資料集
-    # X_test, Y_test = buildTest(datatest_norm)
-    # Y_test = buildTestY(datatest)
 
-# Y_test = Y_test[:,:,np.newaxis]
-    # Y_test = Y_test[:,:,np.newaxis]
-    
     predicted_data = model.predict(X_test)
     predicted_data = pd.DataFrame(np.concatenate(predicted_data))#(1,20)--->(20,1)
     denorn_pre = denormalize(predicted_data)
-    # 
-    # y_hat = predicted_data1.iloc[230:250]
-    # y_hat = y_hat - 700
-    # y_hat1 = np.array(y_hat)[np.newaxis,:,:]
+
     #畫圖===============================================================================
     # plt.xlabel('2021/03/09~2021/03/15', fontsize = 16)  
     # Y_test = np.reshape(Y_test,(20,1)) 
