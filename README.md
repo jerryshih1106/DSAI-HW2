@@ -2,7 +2,7 @@
 # DSAI-HW2
 
 
-## run ##
+## Run ##
 
 
 ```
@@ -16,7 +16,7 @@ python app.py --training training.csv -- testing testing.csv --output output.csv
 ```
 
 
-## train ##
+## Train ##
 
 使用GRU做股票預測
 
