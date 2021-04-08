@@ -30,7 +30,7 @@ python app.py --training training.csv -- testing testing.csv --output output.csv
 
 主要分成以下幾種情況:
 
-##**隔一天預測的股票開盤大於今天**
+## **隔一天預測的股票開盤大於今天** <h2>
 
   
   若已經有股票了，差距大於等於0.5塊則隔天賣掉，小於則持平多觀察陣子
@@ -40,8 +40,8 @@ python app.py --training training.csv -- testing testing.csv --output output.csv
   若尚已經賣空了，則不動作
   
   
-  
-##**隔一天預測的股票開盤小於今天**
+
+## **隔一天預測的股票開盤小於今天** <h2>
 
 
   若已經有股票了，差距大於等於0.5塊則隔天賣掉，小於則持平多觀察陣子
@@ -51,7 +51,7 @@ python app.py --training training.csv -- testing testing.csv --output output.csv
   若尚已經賣空了，則買進賺價差
   
   
-##**若隔天預測的股票與今日相等，則不動作**
+## **若隔天預測的股票與今日相等，則不動作** <h2> 
 
 
 ## 20天預測結果 ##
