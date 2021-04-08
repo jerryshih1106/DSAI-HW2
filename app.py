@@ -7,40 +7,44 @@ from keras.layers.recurrent import LSTM, GRU
 from keras.models import Sequential
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras import optimizers
+from tensorflow.keras import regularizers
 # from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from keras.models import load_model
 def readCSV(x):
     train = pd.read_csv(x,header=None)
     #去掉nan的值
-    train = train.fillna(144)
+    # train = train.fillna(144)
     return train
 def normalize(train):
     train_norm = train.apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
     return train_norm
 def denormalize(train):
-    denorm = train.apply(lambda x: x*(np.max(datatest.iloc[:,0])-np.min(datatest.iloc[:,0]))+np.min(datatest.iloc[:,0]))
+    denorm = train.apply(lambda x: x*(np.max(origin_train.iloc[:,0])-np.min(origin_train.iloc[:,0]))+np.min(origin_train.iloc[:,0]))
     return denorm
-def buildManyToManyModel(shape):
-    
+def buildModel(shape):
     model = Sequential()
-    model.add(GRU(70,return_sequences=True,input_length=shape[1], input_dim=shape[2]))
+    # model.add(GRU(30,input_length=shape[1], input_dim=shape[2],return_sequences=True,bias_regularizer=regularizers.l2(1e-4)))
+    # model.add(GRU(30,input_length=shape[1], input_dim=shape[2],return_sequences=True))
     model.add(Dropout(0.1))
-    model.add(GRU(100,return_sequences=False))
+    model.add(GRU(50,return_sequences=True))
     model.add(Dropout(0.1))
-    model.add(Dense(20))
+    model.add(GRU(70,return_sequences=True))
+    model.add(Dropout(0.1))
+    model.add(GRU(100))
+    model.add(Dropout(0.1))
+    model.add(Dense(1))
     model.compile(loss='mse', optimizer='adam')
-
-    print ('model compiled')
-
     return model
 
-def buildTrain(train, past=30, future=20):
-     X_train, Y_train = [], []
+def buildTrain(train, past=30, future=1):
+     X_train, Y_train ,last_dataX= [], [], []
      for i in range(train.shape[0]-future-past):
          X_train.append(np.array(train.iloc[i:i+past]))
          Y_train.append(np.array(train.iloc[i+past:i+past+future][0]))
-     return np.array(X_train), np.array(Y_train)
+         if i == train.shape[0]-future-past-1:
+             last_dataX.append(train.iloc[i+1:i+past+future])
+     return np.array(X_train), np.array(Y_train), np.array(last_dataX)
 
 def buildTestX(test):
     x_test = []
@@ -48,7 +52,7 @@ def buildTestX(test):
     return np.array(x_test)
 def buildTestY(test):
     y_test = []
-    y_test.append(np.array(test.iloc[230:250][0]))
+    y_test.append(np.array(test.iloc[230:231][0]))
     return np.array(y_test)
 def shuffle(X,Y):
     np.random.seed(10)
@@ -63,24 +67,6 @@ def splitData(X,Y,rate):
     return X_train, Y_train, X_val, Y_val
 def rmse(predictions, targets):
     return np.sqrt(((predictions - targets) ** 2).mean())
-
-train = readCSV(x = "training.csv")
-# train = pd.read_csv("training.csv",header=None)
-train_norm = normalize(train)
-
-X_train, Y_train = buildTrain(train_norm,30,20)
-
-X_train, Y_train = shuffle(X_train, Y_train)
-
-
-X_train, Y_train, X_val, Y_val = splitData(X_train, Y_train, 0.1)
-
-
-# model = buildManyToManyModel(X_train.shape)
-# callback = EarlyStopping(monitor="loss", patience=10, verbose=1, mode="auto")
-# model.fit(X_train, Y_train, epochs=1000, batch_size=32, validation_data=(X_val, Y_val), callbacks=[callback])
-# model.save('my_model.h5')
-
 if __name__ == '__main__':
     import argparse
     
@@ -96,72 +82,81 @@ if __name__ == '__main__':
                         default='output.csv',
                         help='output file name')
     args = parser.parse_args()
-
-
-    # datatest = pd.read_csv(args.training)
-    model = load_model('my_model.h5')
-
-    datatest = readCSV(x = "testing.csv")
-    # datatest_Aug = augFeatures(datatest)
-    datatest_norm = normalize(datatest)
-#原始測試資料集
-    X_test = buildTestX(datatest_norm)
-
-    predicted_data = model.predict(X_test)
-    predicted_data = pd.DataFrame(np.concatenate(predicted_data))#(1,20)--->(20,1)
-    denorn_pre = denormalize(predicted_data)
-
-    #畫圖===============================================================================
-    # plt.xlabel('2021/03/09~2021/03/15', fontsize = 16)  
-    # Y_test = np.reshape(Y_test,(20,1)) 
-    # plt.xticks(fontsize = 12)                                 # 設定坐標軸數字格式
-    # plt.yticks(fontsize = 12)
-    # plt.grid(color = 'red', linestyle = '--', linewidth = 1)  # 設定格線顏色、種類、寬度
-    # plt.ylim(2000, 5000)                                          # 設定y軸繪圖範圍
-# 繪圖並設定線條顏色、寬度、圖例
-    # line1, = plt.plot(y_hat, color = 'red', linewidth = 3, label = 'predict')             
-    # line2, = plt.plot(Y_test, color = 'blue', linewidth = 3, label = 'ground true')
-    # plt.legend(handles = [line1, line2])
+    #============================訓練=========================== 
+    train = readCSV(args.training)
+    train_norm = normalize(train)
+    X_train, Y_train ,Last_dataX= buildTrain(train_norm,30,1)
+    X_train, Y_train = shuffle(X_train, Y_train)
+    X_train, Y_train, X_val, Y_val = splitData(X_train, Y_train, 0.1)
+    model = buildModel(X_train.shape)
+    callback = EarlyStopping(monitor="loss", patience=10, verbose=1, mode="auto")
+    model.fit(X_train, Y_train, epochs=1000, batch_size=32, validation_data=(X_val, Y_val), callbacks=[callback])
+    # model.save('test.h5')
+    #=============取出最後三十天==================
+    # model = load_model('test.h5')
+    testing =readCSV(args.testing)
+    origin_train = train
+    y_test = []
+    hat_action = []
+    have = 0
+    
+    y_pre = []
+    #=============================ACTION==============================
+    for i in range(len(testing.iloc[:,0])):
+        print(hat_action)
+        y_test.append(testing.iloc[i][0])
+        # pred = pd.DataFrame(pred)
+        
+        train = train.append(testing.iloc[i])#將今天資料加入training data
+        train_norn = normalize(train)
+        X_train,Y_train,Last_dataX = buildTrain(train_norn,30,1)#提出最後三十筆，包含新的第一天
+        pred = model.predict(Last_dataX)#得到明天開盤預測
+        pred = pd.DataFrame(pred)
+        a = denormalize(pred)
+        y_pre.append(a.iloc[0][0])
+        print(np.sqrt((a-y_test[i])**2))
+        if i < len(testing.iloc[:,0])-1:
+            if a[0][0]>testing.iloc[i][0]:#明天>今天
+                if have == 1:
+                    hat_action.append(0)
+                    have = 1
+                    continue
+                if have == 0:
+                    hat_action.append(-1)
+                    have = -1
+                    continue
+                if have == -1:
+                    hat_action.append(0)
+                    have = -1
+                    continue
+            if a[0][0]<testing.iloc[i][0]:
+                if have == 1:
+                    hat_action.append(-1)
+                    have = 0
+                    continue
+                if have == 0:
+                    # print("fuck")
+                    hat_action.append(1)
+                    # print(type(hat_action))
+                    have = 1
+                    continue
+                if have == -1:
+                    hat_action.append(1)
+                    have = 0
+                    continue
+            if a[0][0] == testing.iloc[i][0]:
+                hat_action.append(0)
+                have = have
+                continue
+#     plt.xlabel('20 days', fontsize = 16)  
+# # 繪圖並設定線條顏色、寬度、圖例
+#     line1, = plt.plot(y_pre, color = 'red', linewidth = 3, label = 'predict')             
+#     line2, = plt.plot(y_test, color = 'blue', linewidth = 3, label = 'ground true')
+#     plt.legend(handles = [line1, line2])
     # plt.savefig('Fe_r_plot.svg')                              # 儲存圖片
     # plt.savefig('Fe_r_plot.png')
     # plt.show()  
-    #================================================================================
-    # Y_test = pd.DataFrame(np.concatenate(Y_test))
-    # realdata = denormalize(Y_test)
-    # print(rmse(y_hat,Y_test))
-    # model.train(df_training)
-    # df_result = model.predict(n_step=7)
-    # y_hat1 = DataFrame(y_hat,index = ['20210323','20210324','20210325','20210326','20210327','20210328','20210329'],columns=['0'])
-    # y_hat.index = Series(['2021-03-23','2021-03-24','2021-03-25','2021-03-26','2021-03-27','2021-03-28','2021-03-29'])
-    # a
-    list_pre = denorn_pre.values.tolist()
-    # list_pre = list(denorn_pre)
-    list_pre = np.reshape(list_pre,(20))
-    hat = []
-    # hat = list(hat)
-    for i in range(len(list_pre)-1):
-        # if i == 0:
-        #     if list_pre[i] == np.min(denorn_pre.iloc[:,0]):
-        #         hat.append(1)
-        #     if list_pre[i] == np.max(denorn_pre.iloc[:,0]):
-        #         hat.append(-1)
-        #     else:
-        #         hat.append(0)
-        # if i < len(list_pre):
-        # print(np.min(denorn_pre.iloc[:,0]))
-        # print('第i次:',i)
-        if list_pre[i+1] == np.min(denorn_pre.iloc[:,0]):
-            hat.append(1)
-        if list_pre[i+1] == np.max(denorn_pre.iloc[:,0]):
-            # print(i)
-            hat.append(-1)
-        if list_pre[i+1] != np.min(denorn_pre.iloc[:,0]):
-            if list_pre[i+1] != np.max(denorn_pre.iloc[:,0]):
-                hat.append(0)
-        # print(hat)
-
-        # if i == len(list_pre):
-
-    hat = pd.DataFrame(hat,columns = ['Action'])
+    #============================================================================
+    hat_action = pd.DataFrame(hat_action,columns = ['Action'])
     # hat.rename(index = {"0":'Action'})
-    hat.to_csv(args.output,index = False)
+    hat_action.to_csv(args.output,index = False)

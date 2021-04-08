@@ -1,0 +1,39 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+pandas=1.2.3=py38hf11a4ad_0
+_tflow_select=2.3.0=eigen
+absl-py=0.12.0=py38haa95532_0
+cython=0.29.22=py38hd77b12b_0
+importlib-metadata=2.0.0=py_1
+intel-openmp=2020.2=254
+jpeg=9b=hb83a4c4_2
+keras=2.4.3=0
+keras-applications=1.0.8=py_1
+keras-base=2.4.3=py_0
+keras-preprocessing=1.1.2=pyhd3eb1b0_0
+markdown=3.3.4=py38haa95532_0
+matplotlib=3.3.4=py38haa95532_0
+matplotlib-base=3.3.4=py38h49ac443_0
+numpy=1.19.2=py38hadc3359_0
+numpy-base=1.19.2=py38ha3acd2a_0
+pip=20.2.3=py38_0
+protobuf=3.14.0=py38hd77b12b_1
+pyasn1=0.4.8=py_0
+pyasn1-modules=0.2.8=py_0
+pycparser=2.20=py_2
+pyjwt=1.7.1=py38_0
+pyopenssl=20.0.1=pyhd3eb1b0_1
+pyparsing=2.4.7=pyhd3eb1b0_0
+pyqt=5.9.2=py38ha925a31_4
+pyreadline=2.1=py38_1
+pysocks=1.7.1=py38haa95532_0
+python=3.8.5=h5fd99cc_1
+python-dateutil=2.8.1=pyhd3eb1b0_0
+pytz=2021.1=pyhd3eb1b0_0
+pyyaml=5.4.1=py38h2bbff1b_1
+tensorboard=2.4.0=pyhc547734_0
+tensorboard-plugin-wit=1.6.0=py_0
+tensorflow=2.3.0=mkl_py38h8c0d9a2_0
+tensorflow-base=2.3.0=eigen_py38h75a453f_0
+tensorflow-estimator=2.3.0=pyheb71bc4_0
