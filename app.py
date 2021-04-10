@@ -175,7 +175,9 @@ if __name__ == '__main__':
                 hat_action.append(0)
                 continue
     #============================================================================
-    hat_action = pd.DataFrame(hat_action,columns = ['Action'])
-    # hat.rename(index = {"0":'Action'})
-    hat_action.to_csv(args.output,index = False)
+    with open(args.output, 'w') as output_file:
+        for row in range(len(hat_action)):
+            # We will perform your action as the open price in the next day.
+            action = hat_action[row]
+            output_file.write(str(action)+"\n")
     print("done")
