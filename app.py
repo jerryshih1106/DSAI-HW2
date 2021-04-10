@@ -78,9 +78,9 @@ if __name__ == '__main__':
                         help='output file name')
     args = parser.parse_args()
     #============================訓練=========================== 
-    # train = readCSV(args.training)
+    train = readCSV(args.training)
     # train = readCSV("training.csv")
-    train = pd.read_csv("training.csv",header=None)
+    #train = pd.read_csv("training.csv",header=None)
     train_norm = normalize(train)
     X_train, Y_train ,Last_dataX= buildTrain(train_norm,30,1)
     X_train, Y_train = shuffle(X_train, Y_train)
@@ -157,10 +157,10 @@ if __name__ == '__main__':
                         have = 0
                         continue
                 if have == -1:
-                    if money < a: #若賣空價格小於明天預測開盤，不動作
+                    if money < a[0][0]: #若賣空價格小於明天預測開盤，不動作
                         hat_action.append(0)
                         continue
-                    if money > a: #若賣空價格大於明天預測開盤，則買進賺價差
+                    if money > a[0][0]: #若賣空價格大於明天預測開盤，則買進賺價差
                         hat_action.append(1)
                         have = 0
                         continue
