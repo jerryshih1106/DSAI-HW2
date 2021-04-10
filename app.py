@@ -11,6 +11,13 @@ from tensorflow.keras import regularizers
 # from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from keras.models import load_model
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
 def readCSV(x):
     train = pd.read_csv(x,header=None)
     #去掉nan的值
@@ -27,14 +34,14 @@ def buildModel(shape):
     # model.add(GRU(50,input_length=shape[1], input_dim=shape[2],return_sequences=True))
     model.add(GRU(30,input_length=shape[1], input_dim=shape[2],return_sequences=True))
     # model.add(GRU(5,input_length=shape[1], input_dim=shape[2]))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.01))
     
     model.add(GRU(50,return_sequences=True))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.01))
     model.add(GRU(70,return_sequences=True))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.01))
     model.add(GRU(100))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.01))
     # model.add(GRU(5))
     # model.add(Dropout(0.1))
     model.add(Dense(1))
@@ -111,10 +118,10 @@ if __name__ == '__main__':
         pred = pd.DataFrame(pred)
         a = denormalize(pred)
         y_pre.append(a.iloc[0][0])
-        y_test.append(testing.iloc[i][0])
+        # y_test.append(testing.iloc[i][0])
         # print(np.sqrt((a-y_test[i])**2))
         if i < len(testing.iloc[:,0])-1:
-            # y_test.append(testing.iloc[i+1][0])
+            y_test.append(testing.iloc[i+1][0])
             if a[0][0]>testing.iloc[i][0]:#明天>今天
                 if have == 1:
                     if a[0][0]-testing.iloc[i][0] >= gap:
@@ -168,6 +175,14 @@ if __name__ == '__main__':
                 hat_action.append(0)
                 continue
     #============================================================================
+    plt.xlabel('20 days', fontsize = 16)  
+# # 繪圖並設定線條顏色、寬度、圖例
+    line1, = plt.plot(y_pre, color = 'red', linewidth = 3, label = 'predict')             
+    line2, = plt.plot(y_test, color = 'blue', linewidth = 3, label = 'ground true')
+    plt.legend(handles = [line1, line2])
+    plt.savefig('Fe_r_plot.svg')                              # 儲存圖片
+    plt.savefig('Fe_r_plot.png')
+    plt.show()  
     hat_action = pd.DataFrame(hat_action,columns = ['Action'])
     # hat.rename(index = {"0":'Action'})
     hat_action.to_csv(args.output,index = False)
