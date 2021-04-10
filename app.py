@@ -100,14 +100,13 @@ if __name__ == '__main__':
     # model = load_model('test.h5')
     testing =readCSV(args.testing)
     origin_train = train
-    y_test = []
-    hat_action = []
-    have = 0
-    y_pre = []
+    hat_action = []#動作
+    have = 0#起始沒有股票
+    y_pre = []#預測y
     gap = 0.5#兩天股票差距
     #=============================ACTION==============================
     for i in range(len(testing.iloc[:,0])):
-        print(hat_action)
+        #print(hat_action)
         if have == -1:#若前一天要求今天賣空 則紀錄今天的股價
             money = testing.iloc[i][0]
         # pred = pd.DataFrame(pred)
@@ -118,10 +117,8 @@ if __name__ == '__main__':
         pred = pd.DataFrame(pred)
         a = denormalize(pred)
         y_pre.append(a.iloc[0][0])
-        # y_test.append(testing.iloc[i][0])
         # print(np.sqrt((a-y_test[i])**2))
         if i < len(testing.iloc[:,0])-1:
-            y_test.append(testing.iloc[i+1][0])
             if a[0][0]>testing.iloc[i][0]:#明天>今天
                 if have == 1:
                     if a[0][0]-testing.iloc[i][0] >= gap:
