@@ -139,7 +139,7 @@ if __name__ == '__main__':
                         have = 0                    
                 if have == -1:
                     hat_action.append(0)
-                    have = 0  
+                    have = -1
                     continue
             if a[0][0]<testing.iloc[i][0]:#今天>明天
                 if have == 1:
