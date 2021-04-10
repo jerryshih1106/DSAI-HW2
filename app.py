@@ -175,3 +175,4 @@ if __name__ == '__main__':
     hat_action = pd.DataFrame(hat_action,columns = ['Action'])
     # hat.rename(index = {"0":'Action'})
     hat_action.to_csv(args.output,index = False)
+    print("done")
