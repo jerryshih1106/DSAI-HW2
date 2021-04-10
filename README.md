@@ -85,10 +85,18 @@ if 預測明天開盤<今天開盤:
 
 ![Fe_r_plot](https://user-images.githubusercontent.com/66662065/114268892-1d92bf00-9a36-11eb-9109-6756aa4c0409.png)
 
-## Action Eg ##
+## EG Action ##
 
 
 ```
-
+Action
+1
+-1
+1
+0
+0
+-1
+1
+-1
 
 ```
