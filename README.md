@@ -22,7 +22,11 @@ python app.py --training training.csv --testing testing.csv --output output.csv
 
 將讀取到的training data後29天結合testing data第一天做predict
 
-得到第二天預測出的開盤價後與第一天正解做比較，進而得出Action
+得到第二天預測出的開盤價後與第一天正解做比較，進而得出第二天的動作
+
+隔天得到第二天的正解後，將讀取到的training data後的28天結合testing data的第1,2天做predict
+
+以此類推。
 
 ## Action ##
 
