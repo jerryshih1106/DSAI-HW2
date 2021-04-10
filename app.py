@@ -38,10 +38,10 @@ def buildModel(shape):
     
     model.add(GRU(50,return_sequences=True))
     model.add(Dropout(0.01))
-    model.add(GRU(70,return_sequences=True))
+    model.add(GRU(70))
     model.add(Dropout(0.01))
-    model.add(GRU(100))
-    model.add(Dropout(0.01))
+    #model.add(GRU(100))
+    #model.add(Dropout(0.01))
     # model.add(GRU(5))
     # model.add(Dropout(0.1))
     model.add(Dense(1))
