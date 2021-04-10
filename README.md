@@ -36,7 +36,7 @@ python app.py --training training.csv --testing testing.csv --output output.csv
   
   若尚未有股票，差距大於等於0.5塊則隔天賣空，小於則不動作
   
-  若已經賣空了，則不動作(賣了一定賠錢)
+  若已經賣空了，則不動作(賣了賠錢)
   
 ### **隔一天預測的股票開盤小於今天** <h3>
 
@@ -44,7 +44,7 @@ python app.py --training training.csv --testing testing.csv --output output.csv
   
   若尚未有股票，差距大於等於0.5塊則隔天買進，小於則不動作
   
-  若已經賣空了，則先判斷說明天的價格是否比賣空的價格低
+  若已經賣空了，則先判斷說明天的價格是否比賣空的價格低(避免依然賠錢的情況)
     
 ### **若隔天預測的股票與今日相等，則不動作** <h3> 
 
