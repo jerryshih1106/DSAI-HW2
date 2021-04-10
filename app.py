@@ -175,14 +175,6 @@ if __name__ == '__main__':
                 hat_action.append(0)
                 continue
     #============================================================================
-    plt.xlabel('20 days', fontsize = 16)  
-# # 繪圖並設定線條顏色、寬度、圖例
-    line1, = plt.plot(y_pre, color = 'red', linewidth = 3, label = 'predict')             
-    line2, = plt.plot(y_test, color = 'blue', linewidth = 3, label = 'ground true')
-    plt.legend(handles = [line1, line2])
-    plt.savefig('Fe_r_plot.svg')                              # 儲存圖片
-    plt.savefig('Fe_r_plot.png')
-    plt.show()  
     hat_action = pd.DataFrame(hat_action,columns = ['Action'])
     # hat.rename(index = {"0":'Action'})
     hat_action.to_csv(args.output,index = False)
