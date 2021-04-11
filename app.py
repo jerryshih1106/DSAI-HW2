@@ -103,10 +103,8 @@ if __name__ == '__main__':
     hat_action = []#動作
     have = 0#起始沒有股票
     y_pre = []#預測y
-    gap = 0.5#兩天股票差距
-    for i in range(3):
-        print(".")
-    print(".....................................................................................等待產生Action")
+    gap = 0.5#兩天股票差
+    print("waiting for action")
     #=============================ACTION==============================
     for i in range(len(testing.iloc[:,0])):
         #print(hat_action)
