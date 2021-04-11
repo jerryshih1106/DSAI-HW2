@@ -97,7 +97,7 @@ if __name__ == '__main__':
     callback = EarlyStopping(monitor="loss", patience=10, verbose=1, mode="auto")
     model.fit(X_train, Y_train, epochs=1000, batch_size=32, validation_data=(X_val, Y_val), callbacks=[callback])
     # model.save('test.h5')
-    #=============取出最後三十天==================
+    #==============================================================
     # model = load_model('test.h5')
     testing =readCSV(args.testing)
     origin_train = train
