@@ -109,8 +109,10 @@ if __name__ == '__main__':
     #=============================ACTION==============================
     for i in range(len(testing.iloc[:,0])):
         #print(hat_action)
-        if have == -1:#若前一天要求今天賣空 則紀錄今天的股價
-            money = testing.iloc[i][0]
+        if have == -1:#若前一天要求今天賣空 
+            if hat_action[i-1] == -1:#且前一天就是賣空當天,則紀錄今天的股價
+                money = testing.iloc[i][0]
+        
         # pred = pd.DataFrame(pred)
         train = train.append(testing.iloc[i])#將今天資料加入training data
         train_norn = normalize(train)
