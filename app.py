@@ -95,7 +95,7 @@ if __name__ == '__main__':
     X_train, Y_train, X_val, Y_val = splitData(X_train, Y_train, 0.1)
     model = buildModel(X_train.shape)
     callback = EarlyStopping(monitor="loss", patience=10, verbose=1, mode="auto")
-    model.fit(X_train, Y_train, epochs=1000, batch_size=32, validation_data=(X_val, Y_val), callbacks=[callback])
+    model.fit(X_train, Y_train, epochs=200, batch_size=32, validation_data=(X_val, Y_val), callbacks=[callback])
     # model.save('test.h5')
     #==============================================================
     # model = load_model('test.h5')
