@@ -163,7 +163,7 @@ if __name__ == '__main__':
                         have = 0
                         continue
                 if have == -1:
-                    if money < a[0][0]: #若賣空價格小於明天預測開盤，不動作
+                    if money <= a[0][0]: #若賣空價格小於明天預測開盤，不動作
                         hat_action.append(0)
                         continue
                     if money > a[0][0]: #若賣空價格大於明天預測開盤，則買進賺價差
